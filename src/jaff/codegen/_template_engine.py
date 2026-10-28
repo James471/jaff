@@ -751,6 +751,30 @@ class TemplateParser:
         """
         self.__substitute_tokens([identity], "HAS", entity)
 
+    def __profile_index(self) -> int | float:
+        """
+        Get the spectral index of the radiation bands.
+
+        Returns
+        -------
+        int or float
+            The index alpha of the photon-number spectrum n(E) ~ E^(alpha-2)
+            within a band.
+
+        Raises
+        ------
+        ParserError
+            If the network has no radiation, so no index.
+        """
+        if not self.net.radiation:
+            raise ParserError(
+                "profile_index needs a network with radiation",
+                self.line,
+                self.nline,
+                self.file,
+            )
+        return self.net.radiation.profile_idx
+
     def __do_iterative_repeat(
         self,
         vars: list[str],
@@ -1310,6 +1334,9 @@ class TemplateParser:
                             self.net.radiation.nbands if self.net.radiation else 0
                         )
                     },
+                    # Returns: int | float - spectral index alpha of the photon-number
+                    # spectrum n(E) ~ E^(alpha-2) within a band
+                    "profile_index": {"func": self.__profile_index},
                     # Returns: str - network label
                     "label": {"func": lambda: self.net.label},
                     # Returns: str - template file name

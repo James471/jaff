@@ -77,17 +77,18 @@ content with $var1$, $var2$ tokens
 
 **Available tokens:**
 
-| Token      | Type   | Description                                |
-| ---------- | ------ | ------------------------------------------ |
-| `nspec`    | `int`  | Number of species                          |
-| `nreact`   | `int`  | Number of reactions                        |
-| `nelem`    | `int`  | Number of elements                         |
-| `nbands`   | `int`  | Number of radiation bands (`0` if none)    |
-| `label`    | `str`  | Network label                              |
-| `filename` | `str`  | Template file name                         |
-| `filepath` | `Path` | Full template file path                    |
-| `e_idx`    | `int`  | Index of the electron species              |
-| `dedt`     | `str`  | Language-specific internal-energy equation |
+| Token           | Type    | Description                                                        |
+| --------------- | ------- | ------------------------------------------------------------------ |
+| `nspec`         | `int`   | Number of species                                                  |
+| `nreact`        | `int`   | Number of reactions                                                |
+| `nelem`         | `int`   | Number of elements                                                 |
+| `nbands`        | `int`   | Number of radiation bands (`0` if none)                            |
+| `profile_index` | `float` | Spectral index α of the photon-number spectrum (needs radiation)   |
+| `label`         | `str`   | Network label                                                      |
+| `filename`      | `str`   | Template file name                                                 |
+| `filepath`      | `Path`  | Full template file path                                            |
+| `e_idx`         | `int`   | Index of the electron species                                      |
+| `dedt`          | `str`   | Language-specific internal-energy equation                         |
 
 Integer tokens accept inline arithmetic with `+`, `-`, `*`, `/`:
 

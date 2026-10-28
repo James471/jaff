@@ -58,6 +58,7 @@ NETWORKS = {
 ALL_TEMPLATES = {
     "python_solve_ivp": "python",
     "microphysics": "cxx",
+    "quokka": "cxx",
     "fortran_dlsodes": "fortran",
     "kokkos_ode": "cxx",
 }
