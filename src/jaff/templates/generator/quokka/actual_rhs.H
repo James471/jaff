@@ -33,15 +33,15 @@ $$JAFF DEFINE quokka {
 template <typename BurnT>
 AMREX_GPU_HOST_DEVICE AMREX_INLINE void actual_rhs(
     const BurnT &state,
-    amrex::Array1D<amrex::Real, 1,
+    amrex::Array1D<amrex::Real, 0,
                    quokka::microphysics::IntegratorLayout<
-                       typename BurnT::problem_type, BurnT>::neqs> &ydot) {
+                       typename BurnT::problem_type, BurnT>::neqs - 1> &ydot) {
   $$JAFF REPEAT idx, rhs, cse IN rhses { USE quokka }
   const amrex::Real cse$idx$ = $cse$;
-  ydot($idx+1$) = $rhs$;
+  ydot($idx$) = $rhs$;
   $$JAFF END
   $$JAFF SUB nspec
-  ydot($nspec+1$) /= state.rho;
+  ydot($nspec$) /= state.rho;
   $$JAFF END
 }
 
@@ -53,17 +53,17 @@ AMREX_GPU_HOST_DEVICE AMREX_INLINE void actual_jac(const BurnT &state,
 
   $$JAFF REPEAT idx, expr, cse IN jacobian { USE quokka }
   const amrex::Real cse$idx$ = $cse$;
-  jac($idx+1$, $idx+1$) = $expr$;
+  jac($idx$, $idx$) = $expr$;
   $$JAFF END
   // jaff's energy row and column are those of E = rho e: the row is d(dE/dt)
   // and the column d/dE. Change them to e, with rho fixed during the burn: the
   // row divides by rho, the column multiplies by rho, and d(de/dt)/de =
   // d(dE/dt)/dE is unchanged.
   $$JAFF SUB nspec
-  for (int i = 1; i <= Layout::neqs; i++) {
-    if (i != $nspec+1$) {
-      jac($nspec+1$, i) /= state.rho;
-      jac(i, $nspec+1$) *= state.rho;
+  for (int i = 0; i < Layout::neqs; i++) {
+    if (i != $nspec$) {
+      jac($nspec$, i) /= state.rho;
+      jac(i, $nspec$) *= state.rho;
     }
   }
   $$JAFF END
