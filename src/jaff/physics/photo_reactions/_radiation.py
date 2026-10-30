@@ -848,6 +848,25 @@ class Radiation:
         ]
 
     @property
+    def profile_index(self) -> int | float:
+        """Spectral index *α* shared by every band (``grp.profile_idx``).
+
+        Raises
+        ------
+        ValueError
+            If the bands have different indices (a per-band list in
+            ``props.profile_index``).
+        """
+        indices = [grp.profile_idx for grp in self.groups]
+        if any(index != indices[0] for index in indices):
+            raise ValueError(
+                f"profile_index needs one spectral index for all bands; "
+                f"the bands have {indices}"
+            )
+
+        return indices[0]
+
+    @property
     def total_emissivity(self) -> sp.Expr | None:
         """Sum of the group emissivities, or ``None`` without a ``globalEmissivity``.
 
