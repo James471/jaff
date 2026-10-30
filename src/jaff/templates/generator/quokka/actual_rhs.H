@@ -33,15 +33,15 @@ $$JAFF DEFINE quokka {
 template <typename BurnT>
 AMREX_GPU_HOST_DEVICE AMREX_INLINE void actual_rhs(
     const BurnT &state,
-    amrex::Array1D<amrex::Real, 0,
-                   quokka::microphysics::IntegratorLayout<
-                       typename BurnT::problem_type, BurnT>::neqs - 1> &ydot) {
+    amrex::GpuArray<amrex::Real,
+                    quokka::microphysics::IntegratorLayout<
+                        typename BurnT::problem_type, BurnT>::neqs> &ydot) {
   $$JAFF REPEAT idx, rhs, cse IN rhses { USE quokka }
   const amrex::Real cse$idx$ = $cse$;
-  ydot($idx$) = $rhs$;
+  ydot[$idx$] = $rhs$;
   $$JAFF END
   $$JAFF SUB nspec
-  ydot($nspec$) /= state.rho;
+  ydot[$nspec$] /= state.rho;
   $$JAFF END
 }
 
