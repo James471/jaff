@@ -21,4 +21,5 @@ TOKENS: Dict[str, Getter] = {
     "dedt": lambda c: c.cg.get_dedt(),
     "dtdt": lambda c: c.cg.get_dtdt(),
     "e_idx": lambda c: c.net.species.e_idx(),
+    "eos_type": lambda c: c.net.eos_props.type,
 }

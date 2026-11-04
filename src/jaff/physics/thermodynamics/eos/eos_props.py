@@ -86,6 +86,35 @@ class EosProps:
                 kwargs["gamma_map"]
             )
 
+    def gamma_of(self, name: str) -> float:
+        """Adiabatic index of the species called *name*.
+
+        ``ideal`` gives every species its ``gamma``; ``multi_gamma`` gives
+        ``gamma_map[name]``, or ``default_gamma`` for a species absent from the map.
+
+        Parameters
+        ----------
+        name : str
+            Species name, as in ``gamma_map``.
+
+        Returns
+        -------
+        float
+            The adiabatic index.
+
+        Raises
+        ------
+        ValueError
+            If the EOS type has no adiabatic indices (the Fermi-degenerate types).
+        """
+        if self.type == "ideal":
+            return self.gamma
+
+        if self.type == "multi_gamma":
+            return self.gamma_map.get(name, self.default_gamma)
+
+        raise ValueError(f"eos '{self.type}' has no adiabatic indices")
+
     @staticmethod
     def _validate_gamma(name: str, value: Any) -> float:
         """Return *value* as a float, requiring a real number > 1."""

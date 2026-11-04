@@ -83,8 +83,8 @@ class EosFactory:
     def multi_gamma(self) -> InternalEnergy:
         """Internal energy summed over species with per-species adiabatic indices.
 
-        Each species uses ``props.gamma_map[name]``, falling back to
-        ``props.default_gamma``.
+        Each species uses ``props.gamma_of(name)``: ``props.gamma_map[name]``,
+        falling back to ``props.default_gamma``.
 
         Returns
         -------
@@ -92,10 +92,8 @@ class EosFactory:
             InternalEnergy wrapping the volumetric internal energy [erg cm⁻³].
         """
         e = Float(0.0)
-        gamma_map = self.props.gamma_map  # type: ignore
-        default_gamma = self.props.default_gamma  # type: ignore
         for sp in self._net.species:
-            gamma = gamma_map.get(sp.name, default_gamma)
+            gamma = self.props.gamma_of(sp.name)
             e += (
                 self._net.symbols.ndens[sp.index]
                 * k_B.cgs.value

@@ -137,6 +137,7 @@ $$JAFF END
 | `e_idx`    | `int`  | Index of the electron species              |
 | `dedt`     | `str`  | Language-specific total `dE/dt` expression |
 | `dtdt`     | `str`  | Language-specific total `dT/dt` expression |
+| `eos_type` | `str`  | EOS type of `[network.eos]` (`ideal` if unset) |
 
 Integer tokens accept inline arithmetic with `+`, `-`, `*`, `/` (see
 [Placeholders](#placeholders)):
@@ -340,6 +341,7 @@ with a `cse` variable support CSE.
 | `species`                      | `idx, specie`                              | —              |
 | `species_with_normalized_sign` | `idx, specie_with_normalized_sign`         | `SIGN` |
 | `specie_masses`                | `idx, specie_mass`                         | —              |
+| `specie_gammas`                | `idx, specie_gamma`                        | —              |
 | `specie_charges`               | `idx, specie_charge`                       | —              |
 | `specie_masses_ne`             | `idx, specie_mass_ne`                      | —              |
 | `specie_charges_ne`            | `idx, specie_charge_ne`                    | —              |
@@ -358,7 +360,10 @@ with a `cse` variable support CSE.
 
 The `_ne` variants exclude the electron. `neutral_indices` and `charged_indices`
 list the same values as `neutral_specie_indices` and `charged_specie_indices`
-under shorter variable names.
+under shorter variable names. `specie_gammas` is each species' adiabatic index
+from `[network.eos]`: `gamma` for every species with `ideal`, the `gamma_map`
+entry or `default_gamma` with `multi_gamma`. With an EOS type that has no
+adiabatic indices (the Fermi-degenerate types), rendering stops with an error.
 
 #### Reactions
 

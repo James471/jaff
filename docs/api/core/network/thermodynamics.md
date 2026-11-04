@@ -76,3 +76,9 @@ index or a non-`dict` `gamma_map` raises `TypeError`.
 | `multi_gamma`                   | `default_gamma` (float > 1), `gamma_map` (dict[str, float > 1]) | per-species sum; `gamma_map` keyed by species name, falling back to `default_gamma` |
 | `fermi_degenerate`              | —                                            | not implemented                                                      |
 | `relativistic_fermi_degenerate` | —                                            | not implemented                                                      |
+
+`#!python EosProps.gamma_of(name)` gives the adiabatic index of the species
+called `name`: `gamma` with `ideal`, `gamma_map[name]` or `default_gamma` with
+`multi_gamma`. The Fermi-degenerate types have none and raise `ValueError`.
+`multi_gamma`'s internal energy and the template property `specie_gammas` both
+read it.

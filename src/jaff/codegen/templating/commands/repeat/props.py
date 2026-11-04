@@ -125,6 +125,10 @@ PROPERTIES: Dict[str, RepeatProp] = {
     ),
     "elements": _items("element", lambda c: c.net.elements.symbols()),
     "specie_masses": _items("specie_mass", lambda c: c.net.species.masses()),
+    "specie_gammas": _items(
+        "specie_gamma",
+        lambda c: [c.net.eos_props.gamma_of(s.name) for s in c.net.species],
+    ),
     "reactants": _items("reactant", lambda c: c.net.reactions.reactants()),
     "products": _items("product", lambda c: c.net.reactions.products()),
     "photo_reactions": _items(
