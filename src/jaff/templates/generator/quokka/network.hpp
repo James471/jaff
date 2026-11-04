@@ -13,7 +13,7 @@
 #include "AMReX_GpuQualifiers.H"
 #include "AMReX_REAL.H"
 
-#include "microphysics/integrator_layout.hpp"
+#include "microphysics/ode_system.hpp"
 
 /// The jaff network's own namespace, named after the network, so that several
 /// jaff networks can be linked into one executable.
@@ -116,7 +116,7 @@ struct Network {
   AMREX_GPU_HOST_DEVICE static void actual_rhs(
       const BurnT &state,
       amrex::GpuArray<amrex::Real,
-                      quokka::microphysics::IntegratorLayout<
+                      quokka::microphysics::ODESystem<
                           typename BurnT::problem_type, BurnT>::neqs> &ydot) {
     static_assert(
         BurnT::traits::integrate_rad_flux,
@@ -134,7 +134,7 @@ struct Network {
   template <typename BurnT, class MatrixType>
   AMREX_GPU_HOST_DEVICE static void actual_jac(const BurnT &state,
                                                MatrixType &jac) {
-    using Layout = quokka::microphysics::IntegratorLayout<
+    using System = quokka::microphysics::ODESystem<
         typename BurnT::problem_type, BurnT>;
     static_assert(
         BurnT::traits::integrate_rad_flux,
@@ -149,7 +149,7 @@ struct Network {
     // the row divides by rho, the column multiplies by rho, and d(de/dt)/de =
     // d(dE/dt)/dE is unchanged.
     $$JAFF SUB nspec
-    for (int i = 0; i < Layout::neqs; i++) {
+    for (int i = 0; i < System::neqs; i++) {
       if (i != $nspec$) {
         jac($nspec$, i) /= state.rho;
         jac(i, $nspec$) *= state.rho;
