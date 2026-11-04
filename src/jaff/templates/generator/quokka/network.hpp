@@ -5,26 +5,30 @@
 /// Quokka problem names the network type with Microphysics_Traits::Network.
 
 #include <cmath> // INFINITY, for an open top band edge
+#include <string_view>
 
 #include "AMReX_Array.H"
 #include "AMReX_Extension.H"
 #include "AMReX_GpuQualifiers.H"
 #include "AMReX_REAL.H"
 
-namespace quokka::networks {
+/// The jaff network's own namespace, named after the network, so that several
+/// jaff networks can be linked into one executable.
+$$JAFF SUB label
+namespace quokka::networks::$label$ {
+$$JAFF END
 
-/// The runtime parameters of JaffNetwork, read from the `network` prefix. They
-/// are defined in network.cpp, not inline here: HIP cannot register inline
-/// managed variables.
-namespace jaff_network {
+// The runtime parameters of Network, read from the `network` prefix. They are
+// defined in network.cpp, not inline here: HIP cannot register inline managed
+// variables.
+
 /// floor of the species and radiation after a burn, and of the mass scalars
 extern AMREX_GPU_MANAGED amrex::Real small_x; // NOLINT
-} // namespace jaff_network
 
 $$JAFF SUB label
 /// The jaff network $label$.
 $$JAFF END
-struct JaffNetwork {
+struct Network {
   $$JAFF SUB nspec
   static constexpr int NumSpec = $nspec$;
   $$JAFF END
@@ -34,6 +38,26 @@ struct JaffNetwork {
     $specie_with_normalized_sign$ = $idx$,
     $$JAFF END
   };
+
+  /// mass of each species [g]
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr auto SpeciesMass()
+      -> amrex::GpuArray<amrex::Real, NumSpec> {
+    $$JAFF REPEAT specie_mass IN specie_masses
+    return {{$specie_mass$}};
+    $$JAFF END
+  }
+  /// adiabatic index of each species, from the network's [network.eos]
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr auto SpeciesGamma()
+      -> amrex::GpuArray<amrex::Real, NumSpec> {
+    $$JAFF REPEAT specie_gamma IN specie_gammas
+    return {{$specie_gamma$}};
+    $$JAFF END
+  }
+  /// the equation of state the network assumes, as jaff names it (the type of
+  /// [network.eos]); Quokka maps it to one of its EOSs
+  $$JAFF SUB eos_type
+  static constexpr std::string_view EOSType = "$eos_type$";
+  $$JAFF END
 
   $$JAFF SUB nbands
   static constexpr int NumChemBands = $nbands$;
@@ -57,15 +81,17 @@ struct JaffNetwork {
   static constexpr int NumThermalBands = 0;
 
   /// floor of the species and radiation after a burn, and of the mass scalars
-  /// (jaff_network::small_x)
+  /// (small_x)
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static auto SmallX() -> amrex::Real {
-    return jaff_network::small_x;
+    return small_x;
   }
 
-  /// Read the runtime parameters (namespace jaff_network).
+  /// Read the runtime parameters.
   static void ReadParameters();
 };
 
-} // namespace quokka::networks
+$$JAFF SUB label
+} // namespace quokka::networks::$label$
+$$JAFF END
 
 #endif // JAFF_NETWORK_HPP_
